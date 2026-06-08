@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkHub — Mis Links</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #FF5733;
+      --accent2: #FFC300;
+      --bg: #0A0A0F;
+      --surface: #13131A;
+      --surface2: #1C1C26;
+      --border: rgba(255,255,255,0.08);
+      --text: #F0EEE8;
+      --muted: #888880;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 16px 80px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,87,51,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HEADER ── */
+    .profile {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+      position: relative;
+    }
+
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      z-index: -1;
+      opacity: 0.4;
+      filter: blur(8px);
+    }
+
+    /* Cambia el emoji del avatar aquí */
+    .avatar-img {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .profile-bio {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.5;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── LINKS ── */
+    .links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .link-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .link-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent);
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+
+    .link-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+      background: var(--surface2);
+    }
+
+    .link-btn:hover::before { opacity: 1; }
+    .link-btn:active { transform: translateY(0) scale(0.99); }
+
+    .link-icon {
+      font-size: 22px;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .link-text {
+      flex: 1;
+    }
+
+    .link-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+    }
+
+    .link-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .link-arrow {
+      font-size: 18px;
+      color: var(--muted);
+      opacity: 0.6;
+      transition: transform 0.18s, opacity 0.18s;
+    }
+
+    .link-btn:hover .link-arrow {
+      transform: translateX(3px);
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    /* Color accent por botón */
+    .link-btn[data-color="orange"] .link-icon { background: rgba(255,87,51,0.15); border-color: rgba(255,87,51,0.25); }
+    .link-btn[data-color="yellow"] .link-icon { background: rgba(255,195,0,0.15); border-color: rgba(255,195,0,0.25); }
+    .link-btn[data-color="green"]  .link-icon { background: rgba(39,174,96,0.15);  border-color: rgba(39,174,96,0.25); }
+    .link-btn[data-color="blue"]   .link-icon { background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.25); }
+    .link-btn[data-color="purple"] .link-icon { background: rgba(155,89,182,0.15); border-color: rgba(155,89,182,0.25); }
+    .link-btn[data-color="pink"]   .link-icon { background: rgba(231,76,60,0.15);  border-color: rgba(231,76,60,0.25); }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 12px;
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    /* ── ENTRADA ANIMADA ── */
+    .profile { animation: fadeUp 0.5s ease both; }
+    .link-btn { animation: fadeUp 0.5s ease both; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .link-btn:nth-child(1) { animation-delay: 0.05s; }
+    .link-btn:nth-child(2) { animation-delay: 0.10s; }
+    .link-btn:nth-child(3) { animation-delay: 0.15s; }
+    .link-btn:nth-child(4) { animation-delay: 0.20s; }
+    .link-btn:nth-child(5) { animation-delay: 0.25s; }
+    .link-btn:nth-child(6) { animation-delay: 0.30s; }
+    .link-btn:nth-child(7) { animation-delay: 0.35s; }
+    .link-btn:nth-child(8) { animation-delay: 0.40s; }
+
+    @media (max-width: 480px) {
+      body { padding: 40px 12px 60px; }
+      .profile-name { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ════════════════════════════════════
+       PERFIL — edita nombre y bio aquí
+  ════════════════════════════════════ -->
+  <div class="profile">
+    <!-- OPCIÓN A: Iniciales (activo por defecto) -->
+    <div class="avatar" id="avatar-initials">LH</div>
+
+    <!-- OPCIÓN B: Foto real — borra el <div> de arriba y quita el comentario:
+    <img src="tu-foto.jpg" alt="Avatar" class="avatar avatar-img" />
+    -->
+
+    <h1 class="profile-name">LinkHub</h1>
+    <p class="profile-bio">Todos mis links en un solo lugar 🔗</p>
+  </div>
+
+  <!-- ════════════════════════════════════
+       BOTONES — edita, agrega o quita
+       
+       Atributos del botón:
+         href      → URL a donde redirige
+         data-color → orange | yellow | green | blue | purple | pink
+         .link-icon → emoji o texto del icono
+         .link-title → nombre del botón
+         .link-desc  → subtítulo (opcional, bórralo si no quieres)
+  ════════════════════════════════════ -->
+  <div class="links-list">
+
+    <a href="https://wa.me/TU_NUMERO" target="_blank" class="link-btn" data-color="green">
+      <div class="link-icon">💬</div>
+      <div class="link-text">
+        <div class="link-title">WhatsApp</div>
+        <div class="link-desc">Escríbeme directo</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a href="https://instagram.com/TU_USUARIO" target="_blank" class="link-btn" data-color="pink">
+      <div class="link-icon">📸</div>
+      <div class="link-text">
+        <div class="link-title">Instagram</div>
+        <div class="link-desc">Fotos y stories</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a href="https://TU_TIENDA.com" target="_blank" class="link-btn" data-color="orange">
+      <div class="link-icon">🛒</div>
+      <div class="link-text">
+        <div class="link-title">Tienda Online</div>
+        <div class="link-desc">Ver productos y precios</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a href="https://TU_CATALOGO.com" target="_blank" class="link-btn" data-color="yellow">
+      <div class="link-icon">📋</div>
+      <div class="link-text">
+        <div class="link-title">Catálogo</div>
+        <div class="link-desc">Todos los productos disponibles</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a href="https://TU_LINK.com" target="_blank" class="link-btn" data-color="blue">
+      <div class="link-icon">📌</div>
+      <div class="link-text">
+        <div class="link-title">Otro Link</div>
+        <div class="link-desc">Descripción corta aquí</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+  </div>
+
+  <p class="footer">Hecho con ❤️ · LinkHub</p>
+</div>
+
+</body>
+</html>
